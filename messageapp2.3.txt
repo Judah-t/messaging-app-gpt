@@ -1,0 +1,43 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.button import Button
+
+class MessageBubble(Label):
+    def __init__(self, text, **kwargs):
+        super().__init__(text=text, **kwargs)
+        self.size_hint_y = None
+        self.height = self.texture_size[1]
+        self.color = (1, 1, 1, 1)
+        self.background_color = (0, 0.5, 0.5, 0.5)
+        self.padding = (10, 10)
+
+
+class MessageApp(App):
+    def build(self):
+        layout = BoxLayout(orientation='vertical', spacing=10, padding=10)
+        self.text_input = TextInput(
+            size_hint_y=None, height=50, multiline=False, text='Enter message here...')
+        self.scroll_view = ScrollView(size_hint=(1, 1))
+        self.layout = BoxLayout(orientation='vertical', spacing=10, size_hint_y=None)
+        self.layout.bind(minimum_height=self.layout.setter('height'))
+        self.scroll_view.add_widget(self.layout)
+        send_button = Button(text='Send', size_hint_y=None, height=40)
+        send_button.bind(on_press=self.send_message)
+        layout.add_widget(self.scroll_view)
+        bottom_row = BoxLayout(size_hint_y=None, height=50, spacing=10)
+        bottom_row.add_widget(self.text_input)
+        bottom_row.add_widget(send_button)
+        layout.add_widget(bottom_row)
+        return layout
+
+    def send_message(self, instance):
+        message = self.text_input.text
+        if message:
+            self.layout.add_widget(MessageBubble(text=message))
+            self.text_input.text = ''
+
+if __name__ == '__main__':
+    MessageApp().run()

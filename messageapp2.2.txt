@@ -1,0 +1,51 @@
+import kivy
+from kivy.app import App
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.scrollview import ScrollView
+from kivy.core.window import Window
+
+class MessageToGodApp(App):
+    def build(self):
+        # Set up the input area
+        self.input_layout = BoxLayout(orientation="horizontal", size_hint_y=None, height=60)
+        self.text_input = TextInput(hint_text="Enter your message here", multiline=False)
+        self.text_input.bind(text=self.on_text_input)
+        self.button = Button(text="Send", size_hint_x=None, width=100)
+        self.button.bind(on_press=self.send_message)
+        self.input_layout.add_widget(self.text_input)
+        self.input_layout.add_widget(self.button)
+
+        # Set up the messages area
+        self.messages_layout = BoxLayout(orientation="vertical", size_hint_y=None)
+        self.scroll_view = ScrollView()
+        self.scroll_view.add_widget(self.messages_layout)
+
+        # Set up the root layout
+        self.root = BoxLayout(orientation="vertical")
+        self.root.add_widget(self.scroll_view)
+        self.root.add_widget(self.input_layout)
+        return self.root
+
+    def send_message(self, instance):
+        message = self.text_input.text
+        self.text_input.text = ""  # Clear the text input
+        self.add_message(message)
+
+    def add_message(self, message):
+        # Add a label to the messages layout
+        label = Label(text=message, size_hint_y=None, height=60, 
+                      halign="right", valign="bottom", 
+                      padding=(5, 5, 5, 5),
+                      background_color=(0.5, 0.5, 0.5, 0.5), 
+                      text_size=(Window.width - 100, None))
+        self.messages_layout.add_widget(label)
+
+    def on_text_input(self, instance, value):
+        self.button.disabled = not bool(value.strip())
+
+if __name__ == "__main__":
+    app = MessageToGodApp()
+    app.run()

@@ -1,0 +1,41 @@
+import kivy
+from kivy.app import App
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.scrollview import ScrollView
+from kivy.core.window import Window
+
+class MessageToGodApp(App):
+    def build(self):
+        self.label = Label(text="Message GOD", font_size=30, size_hint_y=None, height=40)
+        self.text_input = TextInput(multiline=True, size_hint_y=None, height=80)
+        self.send_button = Button(text="Send", size_hint_y=None, height=40)
+        self.send_button.bind(on_press=self.send_message)
+
+        self.past_messages = Label(text="", size_hint_y=None, height=Window.height - 200)
+
+        self.root = BoxLayout(orientation="vertical")
+        self.root.add_widget(self.label)
+
+        messages_box = BoxLayout(orientation="vertical", size_hint_y=None, height=Window.height - 120)
+        messages_box.add_widget(self.past_messages)
+        scroll = ScrollView(size_hint=(1, None), size=(Window.width, Window.height))
+        scroll.add_widget(messages_box)
+        self.root.add_widget(scroll)
+
+        input_box = BoxLayout(orientation="horizontal", size_hint_y=None, height=80)
+        input_box.add_widget(self.text_input)
+        input_box.add_widget(self.send_button)
+        self.root.add_widget(input_box)
+        return self.root
+
+    def send_message(self, instance):
+        message = self.text_input.text
+        self.past_messages.text = self.past_messages.text + "\n\n" + message
+        self.text_input.text = ""
+
+if __name__ == "__main__":
+    app = MessageToGodApp()
+    app.run()
